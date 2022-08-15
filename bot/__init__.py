@@ -135,7 +135,7 @@ AUTHORIZED_CHATS = set()
 SUDO_USERS = set()
 AS_DOC_USERS = set()
 AS_MEDIA_USERS = set()
-EXTENSION_FILTER = set()
+EXTENSION_FILTER = set(['.aria2'])
 LEECH_LOG = set()
 MIRROR_LOGS = set()
 
@@ -190,7 +190,7 @@ except:
     log_error("One or more env variables missing! Exiting now")
     exit(1)
 
-LOGGER.info("Generating BOT_SESSION_STRING")
+log_info("Generating BOT_SESSION_STRING")
 app = Client(name='pyrogram', api_id=int(TELEGRAM_API), api_hash=TELEGRAM_HASH, bot_token=BOT_TOKEN, parse_mode=enums.ParseMode.HTML, no_updates=True)
 
 def aria2c_init():
@@ -214,7 +214,7 @@ try:
         raise KeyError
 except:
     MEGA_KEY = None
-    LOGGER.info('MEGA_API_KEY not provided!')
+    log_info('MEGA_API_KEY not provided!')
 if MEGA_KEY is not None:
     # Start megasdkrest binary
     Popen(["megasdkrest", "--apikey", MEGA_KEY])
@@ -278,26 +278,26 @@ try:
         raise KeyError
     premium_session = Client(name='premium_session', api_id=int(TELEGRAM_API), api_hash=TELEGRAM_HASH, session_string=USER_SESSION_STRING, parse_mode=enums.ParseMode.HTML, no_updates=True)
     if not premium_session:
-        LOGGER.error("Cannot initialized User Session. Please regenerate USER_SESSION_STRING")
+        log_error("Cannot initialized User Session. Please regenerate USER_SESSION_STRING")
     else:
         premium_session.start()
         if (premium_session.get_me()).is_premium:
             if not LEECH_LOG:
-                LOGGER.error("You must set LEECH_LOG for uploads. Eiting now.")
+                log_error("You must set LEECH_LOG for uploads. Eiting now.")
                 try: premium_session.send_message(OWNER_ID, "You must set LEECH_LOG for uploads, Exiting Now...")
-                except Exception as e: LOGGER.exception(e)
+                except Exception as e: log_exception(e)
                 premium_session.stop()
                 app.stop()
                 exit(1)
             TG_SPLIT_SIZE = 4194304000
-            LOGGER.info("Telegram Premium detected! 4GB Leech enabled.")
+            log_info("Telegram Premium detected! 4GB Leech enabled.")
         elif (not DB_URI) or (not RSS_CHAT_ID):
             premium_session.stop()
-            LOGGER.info(f"Not using rss. if you want to use fill RSS_CHAT_ID and DB_URI variables.")
+            log_info(f"Not using rss. if you want to use fill RSS_CHAT_ID and DB_URI variables.")
 except:
     USER_SESSION_STRING = None
     premium_session = None
-LOGGER.info(f"TG_SPLIT_SIZE: {TG_SPLIT_SIZE}")
+log_info(f"TG_SPLIT_SIZE: {TG_SPLIT_SIZE}")
 try:
     STATUS_LIMIT = getConfig('STATUS_LIMIT')
     if len(STATUS_LIMIT) == 0:
@@ -311,7 +311,7 @@ try:
     if len(HEROKU_API_KEY) == 0 or len(HEROKU_APP_NAME) == 0:	
         raise KeyError	
 except KeyError:	
-    LOGGER.warning("Heroku details not entered.")	
+    log_warning("Heroku details not entered.")	
     HEROKU_API_KEY = None	
     HEROKU_APP_NAME = None
 try:
@@ -480,11 +480,6 @@ try:
 except:
     EQUAL_SPLITS = False
 try:
-    QB_SEED = getConfig('QB_SEED')
-    QB_SEED = QB_SEED.lower() == 'true'
-except:
-    QB_SEED = False
-try:
     CUSTOM_FILENAME = getConfig('CUSTOM_FILENAME')
     if len(CUSTOM_FILENAME) == 0:
         raise KeyError
@@ -509,7 +504,7 @@ try:
     FSUB = FSUB.lower() == 'true'
 except:
     FSUB = False
-    LOGGER.info("Force Subscribe is disabled")
+    log_info("Force Subscribe is disabled")
 try:
     CHANNEL_USERNAME = getConfig("CHANNEL_USERNAME")
     if len(CHANNEL_USERNAME) == 0:
@@ -530,7 +525,7 @@ try:
     AUTO_MUTE = AUTO_MUTE.lower() == 'true'
 except:
     AUTO_MUTE = False
-    LOGGER.info("Auto MUTE is disabled")
+    log_info("Auto MUTE is disabled")
 try:
     CHAT_ID = getConfig("CHAT_ID")
     if len(CHAT_ID) == 0:

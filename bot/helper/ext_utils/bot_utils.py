@@ -287,29 +287,20 @@ def get_readable_message():
                     msg += f"\n\n<b>Splitted:</b> <code>{get_readable_file_size(download.processed_bytes())}</code> of <code>{download.size()}</code> at: <code>{download.speed()}</code>"
                 msg += f"\n<b>ETA:</b> <code>{download.eta()}</code> <b>Elapsed:</b> <code>{get_readable_time(time() - download.message.date.timestamp())}</code>"
                 msg += f'\n\n<b>Task By:</b> <a href="https://t.me/c/{str(download.message.chat.id)[4:]}/{download.message.message_id}">{download.message.from_user.first_name}</a>'
-                try:
-                    msg += f"\n<b>Seeders:</b> <code>{download.aria_download().num_seeders}</code>" \
-                           f" | <b>Peers:</b> <code>{download.aria_download().connections}</code>"
-                    msg += f"\n<b>To Select:</b> <code>/{BotCommands.BtSelectCommand} {download.gid()}</code>"
-                except:
-                    pass
-                try:
-                    msg += f"\n<b>Seeders:</b> <code>{download.torrent_info().num_seeds}</code>" \
-                           f" | <b>Leechers:</b> <code>{download.torrent_info().num_leechs}</code>"
-                    msg += f"\n<b>To Select:</b> <code>/{BotCommands.BtSelectCommand} {download.gid()}</code>"
-                except:
-                    pass
+                if hasattr(download, 'seeders_num'):
+                    try:
+                        msg += f"\n<b>Seeders:</b> {download.seeders_num()} | <b>Leechers:</b> {download.leechers_num()}"
+                    except:
+                        pass
 
             elif download.status() == MirrorStatus.STATUS_SEEDING:
                 msg += f"\n<b>Size:</b> {download.size()}"
-                msg += f"\n<b>Engine:</b> <code>qBittorrent v4.4.2</code>"
-                msg += f"\n<b>Speed:</b> {get_readable_file_size(download.torrent_info().upspeed)}/s"
-                msg += f" | <b>Uploaded:</b> {get_readable_file_size(download.torrent_info().uploaded)}"
-                msg += f"\n<b>Ratio:</b> {round(download.torrent_info().ratio, 3)}"
-                msg += f" | <b>Time:</b> {get_readable_time(download.torrent_info().seeding_time)}"
+                msg += f"\n<b>Speed: </b>{download.upload_speed()}"
+                msg += f" | <b>Uploaded: </b>{download.uploaded_bytes()}"
+                msg += f"\n<b>Ratio: </b>{download.ratio()}"
+                msg += f" | <b>Time: </b>{download.seeding_time()}"
             else:
                 msg += f"\n<b>Size:</b>n{download.size()}"
-                msg += f"\n<b>Engine:</b> {download.eng()}"
             msg += f"\n<b>To Cancel:</b> <code>/{BotCommands.CancelMirror} {download.gid()}</code>"
             msg += f"\n"
             if STATUS_LIMIT is not None and index == STATUS_LIMIT:
@@ -332,6 +323,12 @@ def get_readable_message():
                 if 'KB/s' in spd:
                     upspeed_bytes += float(spd.split('K')[0]) * 1024
                 elif 'MB/s' in spd:
+                    upspeed_bytes += float(spd.split('M')[0]) * 1048576
+            elif download.status() == MirrorStatus.STATUS_SEEDING:
+                spd = download.upload_speed()
+                if 'K' in spd:
+                    upspeed_bytes += float(spd.split('K')[0]) * 1024
+                elif 'M' in spd:
                     upspeed_bytes += float(spd.split('M')[0]) * 1048576
         bmsg += f"\n<b>DL:</b> <code>{get_readable_file_size(dlspeed_bytes)}/s</code><b> | UL:</b> <code>{get_readable_file_size(upspeed_bytes)}/s</code>"
 
