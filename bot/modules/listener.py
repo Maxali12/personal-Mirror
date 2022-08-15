@@ -40,6 +40,7 @@ class MirrorLeechListener:
         self.select = select
         self.isPrivate = message.chat.type in ['private', 'group']
         self.suproc = None
+        self.user_id = self.message.from_user.id
 
     def clean(self):
         try:
@@ -213,7 +214,6 @@ class MirrorLeechListener:
             drive.upload(up_name)
 
     def onUploadComplete(self, link: str, size, files, folders, typ, name):
-        buttons = ButtonMaker()
         if not self.isPrivate and INCOMPLETE_TASK_NOTIFIER and DB_URI is not None:
             DbManger().rm_complete_task(self.message.link)
         msg = f"<b>File Name: </b><code>{escape(name)}</code>\n<b>File Size: </b>{size}"
@@ -236,11 +236,11 @@ class MirrorLeechListener:
                 for index, (link, name) in enumerate(files.items(), start=1):
                     fmsg += f"{index}. <a href='{link}'>{name}</a>\n"
                     if len(fmsg.encode() + msg.encode()) > 4000:
-                        sendMessage(msg + fmsg, self.bot, self.message)
+                        sendMessage(msg + fmsg, self.bot, self.message, InlineKeyboardMarkup(buttons.build_menu(1)))
                         sleep(1)
                         fmsg = ''
                 if fmsg != '':
-                    sendMessage(msg + fmsg, self.bot, self.message)
+                    sendMessage(msg + fmsg, self.bot, self.message, InlineKeyboardMarkup(buttons.build_menu(1)))
             if self.seed:
                 if self.newDir:
                     clean_target(self.newDir)
@@ -278,22 +278,23 @@ class MirrorLeechListener:
             if BUTTON_SIX_NAME is not None and BUTTON_SIX_URL is not None:
                 buttons.buildbutton(f"{BUTTON_SIX_NAME}", f"{BUTTON_SIX_URL}")
             sendMarkup(msg, self.bot, self.message, InlineKeyboardMarkup(buttons.build_menu(2)))
-            if MIRROR_LOGS:
-                try:
-                    for chatid in MIRROR_LOGS:
-                        bot.sendMessage(chat_id=chatid, text=msg,
-                                        reply_markup=InlineKeyboardMarkup(buttons.build_menu(2)),
-                                        parse_mode=ParseMode.HTML)
-                except Exception as e:
-                    LOGGER.warning(e)
-            if BOT_PM and self.message.chat.type != 'private':
-                try:
-                    bot.sendMessage(chat_id=self.user_id, text=msg,
+        
+        if MIRROR_LOGS:
+            try:
+                for chatid in MIRROR_LOGS:
+                    bot.sendMessage(chat_id=chatid, text=msg,
                                     reply_markup=InlineKeyboardMarkup(buttons.build_menu(2)),
                                     parse_mode=ParseMode.HTML)
-                except Exception as e:
-                    LOGGER.warning(e)
-                    return
+            except Exception as e:
+                LOGGER.warning(e)
+        if BOT_PM and self.message.chat.type != 'private':
+            try:
+                bot.sendMessage(chat_id=self.user_id, text=msg,
+                                reply_markup=InlineKeyboardMarkup(buttons.build_menu(2)),
+                                parse_mode=ParseMode.HTML)
+            except Exception as e:
+                LOGGER.warning(e)
+                return
             if self.seed:
                 if self.isZip:
                     clean_target(f"{self.dir}/{name}")
