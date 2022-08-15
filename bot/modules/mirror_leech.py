@@ -5,7 +5,7 @@ from os import path as ospath
 from threading import Thread
 from telegram import ChatPermissions
 from telegram.ext import CommandHandler
-from bot import dispatcher, DOWNLOAD_DIR, LOGGER, MEGA_KEY, BOT_PM, FSUB, CHANNEL_USERNAME, FSUB_CHANNEL_ID, CHAT_ID, AUTO_MUTE
+from bot import dispatcher, DOWNLOAD_DIR, LOGGER, MEGA_KEY, BOT_PM, FSUB, CHANNEL_USERNAME, FSUB_CHANNEL_ID, TITLE_NAME, CHAT_ID, AUTO_MUTE
 from bot.helper.ext_utils.bot_utils import is_url, is_magnet, is_mega_link, is_gdrive_link, get_content_type
 from bot.helper.ext_utils.exceptions import DirectDownloadLinkException
 from bot.helper.mirror_utils.download_utils.aria2_download import add_aria2c_download
@@ -156,11 +156,11 @@ def _mirror_leech(bot, message, isZip=False, extract=False, isQbit=False, isLeec
             try:
                 uname = message.from_user.mention_html(message.from_user.first_name)
                 user = bot.get_chat_member(CHAT_ID, message.from_user.id)
-                if user.status not in ['creator', 'administrator']:
+                if user.status in ['creator', 'administrator']:
+                    return sendMessage(f"OMG, {uname} You are a <b>Admin.</b>\n\nStill don't know how to use me!\n\nPlease read /{BotCommands.HelpCommand}", bot, message)
+                else:
                     bot.restrict_chat_member(chat_id=message.chat.id, user_id=message.from_user.id, until_date=int(time()) + 30, permissions=ChatPermissions(can_send_messages=False))
                     return sendMessage(f"Dear {uname}️,\n\n<b>You are MUTED until you learn how to use me.\n\nWatch others or read </b>/{BotCommands.HelpCommand}", bot, message)
-                else:
-                    return sendMessage(f"OMG, {uname} You are a <b>Admin.</b>\n\nStill don't know how to use me!\n\nPlease read /{BotCommands.HelpCommand}", bot, message)
             except Exception as e:
                 print(f'Auto Mute Warnning: {type(e)} {e}')
 
