@@ -156,7 +156,7 @@ def _mirror_leech(bot, message, isZip=False, extract=False, isQbit=False, isLeec
             try:
                 uname = message.from_user.mention_html(message.from_user.first_name)
                 user = bot.get_chat_member(CHAT_ID, message.from_user.id)
-                if user.status in ['creator', 'administrator']:
+                if user.status in ['owner', 'creator', 'administrator']:
                     return sendMessage(f"OMG, {uname} You are a <b>Admin.</b>\n\nStill don't know how to use me!\n\nPlease read /{BotCommands.HelpCommand}", bot, message)
                 else:
                     bot.restrict_chat_member(chat_id=message.chat.id, user_id=message.from_user.id, until_date=int(time()) + 30, permissions=ChatPermissions(can_send_messages=False))
