@@ -7,7 +7,7 @@ from html import escape
 from telegram import InlineKeyboardMarkup, ParseMode
 from bot import bot, Interval, aria2, INDEX_URL, VIEW_LINK, LOGGER, DB_URI, INCOMPLETE_TASK_NOTIFIER, \
                 BUTTON_FOUR_NAME, BUTTON_FOUR_URL, BUTTON_FIVE_NAME, BUTTON_FIVE_URL, BUTTON_SIX_NAME, BUTTON_SIX_URL, \
-                DOWNLOAD_DIR, download_dict, download_dict_lock, TG_SPLIT_SIZE, MIRROR_LOGS, TITLE_NAME
+                DOWNLOAD_DIR, download_dict, download_dict_lock, TG_SPLIT_SIZE, MIRROR_LOGS, TITLE_NAME, BOT_PM
 from bot.helper.ext_utils.fs_utils import get_base_name, get_path_size, split_file, clean_download, clean_target
 from bot.helper.ext_utils.exceptions import NotSupportedExtractionArchive
 from bot.helper.ext_utils.shortenurl import short_url
