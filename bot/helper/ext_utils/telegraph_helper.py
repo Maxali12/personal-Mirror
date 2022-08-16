@@ -72,4 +72,4 @@ class TelegraphHelper:
             )
         return
 
-telegraph=TelegraphHelper( f'{TITLE_NAME}', 'https://github.com/shuvam-dawn/MLTB-Custom-UI')
+telegraph=TelegraphHelper( f'{TITLE_NAME}', 'https://t.me/+XvFNNP762rcyOTll')
