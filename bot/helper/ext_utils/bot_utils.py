@@ -125,8 +125,8 @@ def get_progress_bar_string(status):
     return p_str
 
 def progress_bar(percentage):
-    p_used = '⬢'
-    p_total = '⬡'
+    p_used = '🟥'
+    p_total = '🟦'
     if isinstance(percentage, str):
         return 'NaN'
     try:
@@ -246,7 +246,7 @@ T: {disk_t}GB | F: {disk_f}GB
 Working For: {currentTime}
 T-DL: {recv} | T-UL: {sent}
 
-Made with ❤️ by Dawn
+Bot Owner @BDBOTS 🇧🇩
 """
 
 #---Thanks for deleting my name ❤️ Appreciate it---#
